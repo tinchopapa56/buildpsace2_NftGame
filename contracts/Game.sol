@@ -11,6 +11,9 @@ import "./libraries/Base64.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
+// import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
+// import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
+
 contract Game is ERC721{
 
   using Counters for Counters.Counter;
@@ -27,34 +30,57 @@ contract Game is ERC721{
   }
   mapping(uint256 => CharacterSTRUCT) nftHolderStruct;
   mapping(address => uint256) nftHolderAddress;
-  // A lil array to help us hold the default data for our characters.
-  // This will be helpful when we mint new characters and need to know
-  // things like their HP, AD, etc.
   CharacterSTRUCT[] allCharacters;
+
+  struct BigBoss {
+    string name;
+    string imageURI;
+    uint hp;
+    uint maxHp;
+    uint attackDamage;
+  }
+
+  BigBoss public bigBoss;
+
 
   // Data passed in to the contract when it's first created initializing the characters.
   // We're going to actually pass these values in from run.js.
-  constructor(string[] memory characterNames,string[] memory characterImageURIs,
-  uint[] memory characterHp,
-  uint[] memory characterAttackDmg) 
-  ERC721("Heroes", "HERO")
-   { for(uint i = 0; i < characterNames.length; i += 1) {
-      allCharacters.push(
-        CharacterSTRUCT({
-        characterIndex: i,
-        name: characterNames[i],
-        imageURI: characterImageURIs[i],
-        hp: characterHp[i],
-        maxHp: characterHp[i],
-        attackDamage: characterAttackDmg[i]
-        })
-      );
+  constructor(
+    string[] memory characterNames,
+    string[] memory characterImageURIs,
+    uint[] memory characterHp,
+    uint[] memory characterAttackDmg,
+    string memory _bossName, // These new variables would be passed in via run.js or deploy.js.
+    string memory _bossImageURI,
+    uint _bossHp,
+    uint _bossAttackDamage
+    ) ERC721("Heroes", "HERO") { 
+      for(uint i = 0; i < characterNames.length; i += 1) {
+        allCharacters.push(
+          CharacterSTRUCT({
+          characterIndex: i,
+          name: characterNames[i],
+          imageURI: characterImageURIs[i],
+          hp: characterHp[i],
+          maxHp: characterHp[i],
+          attackDamage: characterAttackDmg[i]
+          })
+        );
 
-      CharacterSTRUCT memory c = allCharacters[i];
-      console.log("Done initializing %s w/ HP %s, img %s", c.name, c.hp, c.imageURI);
-    }
-    _tokenIds.increment();
-  }
+        CharacterSTRUCT memory c = allCharacters[i];
+        // console.log("Done initializing %s w/ HP %s, img %s", c.name, c.hp, c.imageURI);
+      }
+        bigBoss = BigBoss({
+            name: _bossName,
+            imageURI: _bossImageURI,
+            hp: _bossHp,
+            maxHp: _bossHp,
+            attackDamage: _bossAttackDamage
+          });
+
+        console.log("Done initializing boss %s w/ HP %s, img %s", bigBoss.name, bigBoss.hp, bigBoss.imageURI);
+      _tokenIds.increment();
+   }
 
   function mintCharacterNFT(uint _characterIndex) external {
     uint256 newItemId = _tokenIds.current();
@@ -94,6 +120,28 @@ contract Game is ERC721{
     string memory output = string(abi.encodePacked("data:application/json;base64,", json));
     
     return output;
-}
+  }
+
+  function attackBoss() public {
+    // Get the state of the player's NFT.
+    uint walletNFT = nftHolderAddress[msg.sender];
+    CharacterSTRUCT storage NFTData = nftHolderStruct[walletNFT];
+    require(NFTData.hp > 0, "your NFT has 0 hp");
+    require(bigBoss.hp > 0, "the boss is already dead");
+    //Boss damage
+    if (bigBoss.hp < NFTData.attackDamage) {
+      bigBoss.hp = 0;
+    } else {
+      bigBoss.hp = bigBoss.hp - NFTData.attackDamage;
+    }
+    //player damage
+    if (NFTData.hp < bigBoss.attackDamage) {
+      NFTData.hp = 0;
+    } else {
+      NFTData.hp = NFTData.hp - bigBoss.attackDamage;
+    }
+    console.log("Player attacked boss. New boss hp: %s", bigBoss.hp);
+    console.log("Boss attacked player. New player hp: %s\n", NFTData.hp);
+  }
 
 }

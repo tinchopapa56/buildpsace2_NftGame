@@ -7,15 +7,24 @@ const main = async () => {
         "https://ealvarezdecienfuegosibanez.files.wordpress.com/2016/09/img_7710.jpg?w=620"],
         [1000,500,250],
         [200,100,50],
+        //BOSS
+        "Elon Musk", 
+        "https://i.imgur.com/AksR0tt.png",
+        10000,
+        5
     );
     await gameContract.deployed();
     console.log("Contract has BEEN deployed to:", gameContract.address);
-    
+
     let txn;
-    // We only have three characters.
-    // an NFT w/ the character at index 2 of our array.
-    txn = await gameContract.mintCharacterNFT(2);
-    await txn.wait();
+      txn = await gameContract.mintCharacterNFT(2);
+      await txn.wait();
+
+      txn = await gameContract.attackBoss();
+      await txn.wait();
+
+      txn = await gameContract.attackBoss();
+      await txn.wait();
     
     // Get the value of the NFT's URI.
     let returnedTokenUri = await gameContract.tokenURI(1);
