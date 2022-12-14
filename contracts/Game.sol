@@ -11,9 +11,6 @@ import "./libraries/Base64.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
-// import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
-// import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
-
 contract Game is ERC721{
 
   using Counters for Counters.Counter;
@@ -53,7 +50,8 @@ contract Game is ERC721{
     string memory _bossName, // These new variables would be passed in via run.js or deploy.js.
     string memory _bossImageURI,
     uint _bossHp,
-    uint _bossAttackDamage
+    uint _bossAttackDamage,
+    address _randomnes,
     ) ERC721("Heroes", "HERO") { 
       for(uint i = 0; i < characterNames.length; i += 1) {
         allCharacters.push(
@@ -80,6 +78,7 @@ contract Game is ERC721{
 
         console.log("Done initializing boss %s w/ HP %s, img %s", bigBoss.name, bigBoss.hp, bigBoss.imageURI);
       _tokenIds.increment();
+      randomness = Randomness(_randomness);;
    }
 
   function mintCharacterNFT(uint _characterIndex) external {

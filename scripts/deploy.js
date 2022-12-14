@@ -1,4 +1,10 @@
 const main = async () => {
+    const CHAIN_CONTRACT = await hre.ethers.getContractFactory("VRFv2Consumer");
+    const chainContract = await CHAIN_CONTRACT.deploy(7665) //my sucbscirtion id
+    
+    console.log("Chain Contract deployed to:", chainContract.address);
+    
+
     const gameContractFactory = await hre.ethers.getContractFactory('Game');
     const gameContract = await gameContractFactory.deploy(                 
         ["Zeus", "loki", "poseidon"],
@@ -9,7 +15,7 @@ const main = async () => {
         [200,100,50],                      
     );
     await gameContract.deployed();
-    console.log("Contract deployed to:", gameContract.address);
+    console.log("Game Contract deployed to:", gameContract.address);
   
     
     let txn;
