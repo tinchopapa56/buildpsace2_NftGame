@@ -1,0 +1,5 @@
+1) deploy
+
+2) requestRandomWords() = cre un ID (no lo muestra)
+3) lastRequestId() = te da un uint larguisimo
+4) getRequestSraruts(uintFALOPA el paso 3) = RETURNS RANDOM WORDS

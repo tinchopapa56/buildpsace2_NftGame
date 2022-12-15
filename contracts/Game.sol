@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.7;
 
 import "hardhat/console.sol";
 
@@ -50,8 +50,7 @@ contract Game is ERC721{
     string memory _bossName, // These new variables would be passed in via run.js or deploy.js.
     string memory _bossImageURI,
     uint _bossHp,
-    uint _bossAttackDamage,
-    address _randomnes,
+    uint _bossAttackDamage
     ) ERC721("Heroes", "HERO") { 
       for(uint i = 0; i < characterNames.length; i += 1) {
         allCharacters.push(
@@ -78,7 +77,7 @@ contract Game is ERC721{
 
         console.log("Done initializing boss %s w/ HP %s, img %s", bigBoss.name, bigBoss.hp, bigBoss.imageURI);
       _tokenIds.increment();
-      randomness = Randomness(_randomness);;
+      // randomness = Randomness(_randomness);;
    }
 
   function mintCharacterNFT(uint _characterIndex) external {
