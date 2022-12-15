@@ -1,6 +1,4 @@
 //hardhat values
-//Chain Contract deployed to: 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
-//Game Contract deployed to: 0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0
 
 //eL POSTA DESDE REMIX (goerli) = 0x6b3103fd1c46a1570a02e58257fb52b7ce7fe87f
 
@@ -9,6 +7,15 @@ const main = async () => {
     const chainContract = await CHAIN_CONTRACT.deploy(7665) //my sucbscirtion id
     
     console.log("Chain Contract deployed to:", chainContract.address);
+
+    //GET RANDOM NUMBER
+    let reqRandomWord = await chainContract.requestRandomWords();
+    await reqRandomWord.wait();
+    let lastRequest= await chainContract.lastRequestId();
+    await lastRequest.wait();
+    let random = await chainContract.getRequestStatus(lastRequest);
+    await random.wait();
+    console.log("Random Number o word is:", random)
     
 
     const gameContractFactory = await hre.ethers.getContractFactory('Game');
@@ -29,22 +36,22 @@ const main = async () => {
     console.log("Game Contract deployed to:", gameContract.address);
   
     
-    let txn;
-    txn = await gameContract.mintCharacterNFT(0);
-    await txn.wait();
-    console.log("Minted NFT #1");
+    // let txn;
+    // txn = await gameContract.mintCharacterNFT(0);
+    // await txn.wait();
+    // console.log("Minted NFT #1");
   
-    txn = await gameContract.mintCharacterNFT(1);
-    await txn.wait();
-    console.log("Minted NFT #2");
+    // txn = await gameContract.mintCharacterNFT(1);
+    // await txn.wait();
+    // console.log("Minted NFT #2");
   
-    txn = await gameContract.mintCharacterNFT(2);
-    await txn.wait();
-    console.log("Minted NFT #3");
+    // txn = await gameContract.mintCharacterNFT(2);
+    // await txn.wait();
+    // console.log("Minted NFT #3");
   
-    txn = await gameContract.mintCharacterNFT(1);
-    await txn.wait();
-    console.log("Minted NFT #4");
+    // txn = await gameContract.mintCharacterNFT(1);
+    // await txn.wait();
+    // console.log("Minted NFT #4");
   
     console.log("Done deploying and minting!");
   
