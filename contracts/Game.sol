@@ -25,10 +25,6 @@ contract Game is ERC721{
     uint maxHp;
     uint attackDamage;
   }
-  mapping(uint256 => CharacterSTRUCT) nftHolderStruct;
-  mapping(address => uint256) nftHolderAddress;
-  CharacterSTRUCT[] allCharacters;
-
   struct BigBoss {
     string name;
     string imageURI;
@@ -36,9 +32,16 @@ contract Game is ERC721{
     uint maxHp;
     uint attackDamage;
   }
+  mapping(uint256 => CharacterSTRUCT) nftHolderStruct;
+  mapping(address => uint256) nftHolderAddress;
+  CharacterSTRUCT[] allCharacters;
+
+  
 
   BigBoss public bigBoss;
 
+  event CharacterNFTMinted(address sender, uint256 tokenId, uint256 characterIndex);
+  event AttackComplete(address sender, uint newBossHp, uint newPlayerHp);
 
   // Data passed in to the contract when it's first created initializing the characters.
   // We're going to actually pass these values in from run.js.
@@ -96,6 +99,8 @@ contract Game is ERC721{
 
     nftHolderAddress[msg.sender] = newItemId;
     _tokenIds.increment();
+    emit CharacterNFTMinted(msg.sender, newItemId, _characterIndex);
+    //una transaccion no puede *return* valores
   }
   
   function tokenURI(uint256 _tokenId) public view override returns (string memory) {
@@ -127,19 +132,30 @@ contract Game is ERC721{
     require(NFTData.hp > 0, "your NFT has 0 hp");
     require(bigBoss.hp > 0, "the boss is already dead");
     //Boss damage
-    if (bigBoss.hp < NFTData.attackDamage) {
-      bigBoss.hp = 0;
-    } else {
-      bigBoss.hp = bigBoss.hp - NFTData.attackDamage;
-    }
+    if (bigBoss.hp < NFTData.attackDamage) {bigBoss.hp = 0;} 
+    else {bigBoss.hp = bigBoss.hp - NFTData.attackDamage;}
     //player damage
-    if (NFTData.hp < bigBoss.attackDamage) {
-      NFTData.hp = 0;
-    } else {
-      NFTData.hp = NFTData.hp - bigBoss.attackDamage;
-    }
+    if (NFTData.hp < bigBoss.attackDamage) {NFTData.hp = 0;} 
+    else {NFTData.hp = NFTData.hp - bigBoss.attackDamage;}
+
     console.log("Player attacked boss. New boss hp: %s", bigBoss.hp);
     console.log("Boss attacked player. New player hp: %s\n", NFTData.hp);
+    emit AttackComplete(msg.sender, bigBoss.hp, NFTData.hp);
   }
-
+  
+  function checkIfUserHasNft() public view returns(CharacterSTRUCT memory){
+    uint ownedNftID = nftHolderAddress[msg.sender];
+    if(ownedNftID > 0){
+      return nftHolderStruct[ownedNftID];
+    } else {
+      CharacterSTRUCT memory empty;
+      return empty;
+    }
+  }
+  function getAllCharacters() public view returns(CharacterSTRUCT[] memory){
+    return allCharacters;
+  }
+  function getBigBoss() public view returns(BigBoss memory) {
+    return bigBoss;
+  }
 }

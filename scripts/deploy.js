@@ -9,13 +9,13 @@ const main = async () => {
     console.log("Chain Contract deployed to:", chainContract.address);
 
     //GET RANDOM NUMBER
-    let reqRandomWord = await chainContract.requestRandomWords();
-    await reqRandomWord.wait();
-    let lastRequest= await chainContract.lastRequestId();
-    await lastRequest.wait();
-    let random = await chainContract.getRequestStatus(lastRequest);
-    await random.wait();
-    console.log("Random Number o word is:", random)
+    // let reqRandomWord = await chainContract.requestRandomWords();
+    // await reqRandomWord.wait();
+    // let lastRequest= await chainContract.lastRequestId();
+    // await lastRequest.wait();
+    // let random = await chainContract.getRequestStatus(lastRequest);
+    // await random.wait();
+    // console.log("Random Number o word is:", random)
     
 
     const gameContractFactory = await hre.ethers.getContractFactory('Game');
